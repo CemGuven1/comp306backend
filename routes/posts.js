@@ -53,7 +53,7 @@ router.get('/User/:user_id/Community/:community_id/', async (req, res) => {
 
 //Add new post for the spesified author and spesified community
 router.post('/User/:user_id/Community/:community_id/addPost', async (req, res) => {
-  const { post_name, post_title, post_text } = req.body;
+  const { post_name, post_text } = req.body;
   const author_id = req.params.user_id; // Retrieve user_id from the route parameter
   const community_id = req.params.community_id; // Retrieve user_id from the route parameter
 
@@ -63,8 +63,8 @@ router.post('/User/:user_id/Community/:community_id/addPost', async (req, res) =
     const newPostId = maxPostId ? maxPostId + 1 : 1;
 
     await req.pool.query(
-      'INSERT INTO Posts (post_id, post_name, post_title, post_text, post_date, author_id, community_id) VALUES (?, ?, ?, ?, NOW(), ?, ?)',
-      [newPostId, post_name, post_title, post_text, author_id, community_id]
+      'INSERT INTO Posts (post_id, post_name, post_text, post_date, author_id, community_id) VALUES (?, ?, ?, NOW(), ?, ?)',
+      [newPostId, post_name, post_text, author_id, community_id]
     );
 
     res.json({ message: 'Post added successfully' });
