@@ -1,12 +1,37 @@
 import { Router } from 'express';
 const router = Router();
 
-//Get all games
+//Get all games with all of its achievements
 router.get('/', async (req, res) => {
   try {
-    const query = 'SELECT * FROM Games';
-    const [rows] = await req.pool.query(query);
-    res.json(rows);
+    // Retrieve all games with their achievements
+    const query = `
+      SELECT Games.game_id, Games.game_name, Achievements.achievement_id, Achievements.achievement_name
+      FROM Games
+      LEFT JOIN Achievements ON Games.game_id = Achievements.game_id
+    `;
+    const [results] = await req.pool.query(query);
+
+    // Organize the data into an object with games and their achievements
+    const games = {};
+    results.forEach((row) => {
+      const { game_id, game_name, achievement_id, achievement_name } = row;
+      if (!games[game_id]) {
+        games[game_id] = {
+          game_id,
+          game_name,
+          achievements: [],
+        };
+      }
+      if (achievement_id) {
+        games[game_id].achievements.push({
+          achievement_id,
+          achievement_name,
+        });
+      }
+    });
+
+    res.json({ games });
   } catch (error) {
     console.error('Error executing MySQL query:', error);
     res.status(500).json({ error: 'Internal Server Error' });

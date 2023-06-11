@@ -90,4 +90,36 @@ router.post('/User/:user_id/Community/:community_id/leave', async (req, res) => 
   }
 });
 
+//ADMIN OPERATION --> UPDATE THE COMMUNITY INFO
+router.put('/:community_id/Admin/:user_id/update', async (req, res) => {
+  const admin_id = req.params.user_id; // Retrieve the admin ID from the route parameter
+  const community_id = req.params.community_id; // Retrieve the community ID from the route parameter
+  const { community_name, community_description } = req.body; // Retrieve the updated community information from the request body
+
+  try {
+    // Check if the user is the admin of the community
+    const [result] = await req.pool.query(
+      'SELECT COUNT(*) AS count FROM Communities WHERE community_id = ? AND community_admin = ?',
+      [community_id, admin_id]
+    );
+    const isAdmin = result[0].count > 0;
+
+    if (!isAdmin) {
+      return res.status(403).json({ error: 'You are not the admin of the community' });
+    }
+
+    // Update the community information
+    await req.pool.query(
+      'UPDATE Communities SET community_name = ?, community_description = ? WHERE community_id = ?',
+      [community_name, community_description, community_id]
+    );
+
+    res.json({ message: 'Community information updated successfully' });
+  } catch (error) {
+    console.error('Error executing MySQL query:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
 export default router;
