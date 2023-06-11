@@ -3,6 +3,19 @@ import { checkLoginCredentials } from '../auth.js';
 
 const router = Router();
 
+//Get all users
+router.get('/', async (req, res) => {
+  try {
+    const getUsersQuery = 'SELECT * FROM Users';
+    const [users] = await req.pool.query(getUsersQuery);
+
+    res.json(users);
+  } catch (error) {
+    console.error('Error executing MySQL query:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 //Get spesific user
 router.get('/:user_id', async (req, res) => {
     const userId = req.params.user_id;

@@ -102,6 +102,14 @@ router.delete('/Admin/:user_id/Community/:community_id/Post/:post_id/delete', as
       return res.status(403).json({ error: 'You are not the admin of the community' });
     }
 
+    // Check if the post belongs to the specified community
+    const postQuery = 'SELECT author_id FROM Posts WHERE post_id = ? AND community_id = ?';
+    const [postResult] = await req.pool.query(postQuery, [post_id, community_id]);
+
+    if (postResult.length === 0) {
+      return res.status(404).json({ error: 'Post not found in the specified community.' });
+    }
+    
     // Delete the post from the community
     await req.pool.query('DELETE FROM Posts WHERE post_id = ?', [post_id]);
 
