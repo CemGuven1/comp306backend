@@ -4,14 +4,9 @@ const router = Router();
 //Get all games
 router.get('/', async (req, res) => {
   try {
-    // Retrieve all games
-    const query = `
-      SELECT *
-      FROM Games
-    `;
-    const [results] = await req.pool.query(query);
-
-    res.json({ games: results });
+    const query = 'SELECT * FROM Games';
+    const [rows] = await req.pool.query(query);
+    res.json(rows);
   } catch (error) {
     console.error('Error executing MySQL query:', error);
     res.status(500).json({ error: 'Internal Server Error' });
