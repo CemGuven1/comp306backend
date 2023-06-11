@@ -1,6 +1,19 @@
 import { Router } from 'express';
 const router = Router();
 
+//Get all achievements
+router.get('/', async (req, res) => {
+  try {
+    const getAchievementsQuery = 'SELECT * FROM Achievements';
+    const [achievements] = await req.pool.query(getAchievementsQuery);
+
+    res.json(achievements);
+  } catch (error) {
+    console.error('Error executing MySQL query:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 //Get spesific achievements of a game 
 router.get('/Game/:game_id', async (req, res) => {
   const game_id = req.params.game_id; // Retrieve the game ID from the route parameter

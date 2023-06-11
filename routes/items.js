@@ -2,7 +2,7 @@ import { Router } from 'express';
 const router = Router();
 
 //Get items along with their games, spesific to a user
-router.get('/users/:user_id/items', async (req, res) => {
+router.get('/user/:user_id/items', async (req, res) => {
   const user_id = req.params.user_id; // Retrieve user_id from the route parameter
 
   try {

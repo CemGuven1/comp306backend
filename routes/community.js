@@ -31,7 +31,7 @@ router.get('/User/:user_id', async (req, res) => {
 });
 
 //Join to a community 
-router.post('/User/:user_id/Community/:community_id/join', async (req, res) => {
+router.post('/:community_id/User/:user_id/join', async (req, res) => {
   const user_id = req.params.user_id; // Retrieve user_id from the route parameter
   const community_id = req.params.community_id; // Retrieve community_id from the route parameter
 
@@ -61,7 +61,7 @@ router.post('/User/:user_id/Community/:community_id/join', async (req, res) => {
 });
 
 //Leave from a community
-router.post('/User/:user_id/Community/:community_id/leave', async (req, res) => {
+router.post('/:community_id/User/:user_id/leave', async (req, res) => {
   const user_id = req.params.user_id; // Retrieve user_id from the route parameter
   const community_id = req.params.community_id; // Retrieve community_id from the route parameter
 
