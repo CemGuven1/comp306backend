@@ -1,0 +1,47 @@
+import express from "express";
+import cors from "cors";
+import mysql from 'mysql2/promise';
+
+//Import routes
+import gamesRoutes from './routes/games.js';
+import usersRoutes from './routes/users.js';
+import itemsRoutes from './routes/items.js';
+import communityRoutes from './routes/community.js';
+import postsRoutes from './routes/posts.js';
+import achievementRoutes from './routes/achievement.js';
+
+const app = express();
+const port = 3000;
+
+app.use(cors());
+app.use(express.json());
+
+
+// MySQL Connection Pool
+const pool = mysql.createPool({
+  host: 'localhost',
+  user: 'root',
+  password: '20012002',
+  database: 'steam',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+});
+
+// Set up the database connection pool
+app.use((req, res, next) => {
+    req.pool = pool;
+    next();
+  });
+  
+// Include the routes
+app.use('/games', gamesRoutes);
+app.use('/users', usersRoutes);
+app.use('/items', itemsRoutes);
+app.use('/posts', postsRoutes);
+app.use('/community', communityRoutes);
+app.use('/achievement', achievementRoutes);
+
+app.listen(port, () => {
+    console.log(`Listening at http://localhost:${port}`);
+  });
