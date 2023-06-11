@@ -1,18 +1,6 @@
 import { Router } from 'express';
 const router = Router();
 
-//Get all achievements
-router.get('/', async (req, res) => {
-  try {
-    const query = 'SELECT * FROM Achievements';
-    const [rows] = await req.pool.query(query);
-    res.json(rows);
-  } catch (error) {
-    console.error('Error executing MySQL query:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
 //Get spesific achievement
 router.get('/:achievement_id', async (req, res) => {
     const achievement_id = req.params.achievement_id;
@@ -32,6 +20,24 @@ router.get('/:achievement_id', async (req, res) => {
     }
   });
 
-// Add more routes for achievements, such as creating, updating, deleting, etc.
+ //Get earned achievements of a spesific user
+ router.get('/User/:user_id', async (req, res) => {
+  const { user_id } = req.params;
+
+  try {
+    const getUserAchievementsQuery = `
+      SELECT Achievements.achievement_id, Achievements.achievement_name
+      FROM Achievements
+      INNER JOIN XP ON Achievements.achievement_id = XP.achievement_id
+      WHERE XP.player_id = ?
+    `;
+    const [achievementRows] = await req.pool.query(getUserAchievementsQuery, [user_id]);
+
+    res.json(achievementRows);
+  } catch (error) {
+    console.error('Error executing MySQL query:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 export default router;

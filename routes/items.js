@@ -1,37 +1,26 @@
 import { Router } from 'express';
 const router = Router();
 
-//Get all items
-router.get('/', async (req, res) => {
+//Get items along with their games, spesific to a user
+router.get('/users/:user_id/items', async (req, res) => {
+  const user_id = req.params.user_id; // Retrieve user_id from the route parameter
+
   try {
-    const query = 'SELECT * FROM Items';
-    const [rows] = await req.pool.query(query);
-    res.json(rows);
+    // Retrieve items and their associated games for the user
+    const query = `
+      SELECT i.item_id, i.item_name, i.item_price, g.game_id, g.game_name, g.game_price
+      FROM Items AS i
+      JOIN Games AS g ON i.game_id = g.game_id
+      WHERE i.owner_id = ?
+    `;
+    const [results] = await req.pool.query(query, [user_id]);
+
+    // Return the results
+    res.json(results);
   } catch (error) {
     console.error('Error executing MySQL query:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
-//Get spesific item
-router.get('/:item_id', async (req, res) => {
-    const item_id = req.params.item_id;
-  
-    try {
-      const query = 'SELECT * FROM Items WHERE item_id = ?';
-      const [rows] = await req.pool.query(query, [item_id]);
-  
-      if (rows.length === 0) {
-        res.status(404).json({ error: 'Item not found' });
-      } else {
-        res.json(rows[0]);
-      }
-    } catch (error) {
-      console.error('Error executing MySQL query:', error);
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
-  });
-
-// Add more routes for items, such as creating, updating, deleting, etc.
 
 export default router;

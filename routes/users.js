@@ -1,7 +1,9 @@
 import { Router } from 'express';
+import { checkLoginCredentials } from '../auth.js';
+
 const router = Router();
 
-//get spesific user
+//Get spesific user
 router.get('/:user_id', async (req, res) => {
     const userId = req.params.user_id;
   
@@ -58,8 +60,25 @@ router.get('/:user_id', async (req, res) => {
     }
   });
   
-
-// Add more routes for users, such as creating, updating, deleting, etc.
+//Login credentials check
+  router.post('/login', async (req, res) => {
+    const { username, password } = req.body;
+  
+    try {
+      const loginResult = await checkLoginCredentials(username, password, req.pool);
+  
+      if (loginResult.success) {
+        // Login successful
+        res.json({ message: 'Login successful', user: loginResult.user });
+      } else {
+        // Login failed
+        res.status(401).json({ error: loginResult.error });
+      }
+    } catch (error) {
+      console.error('Error handling login:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
 
 
 export default router;
