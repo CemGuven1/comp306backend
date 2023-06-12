@@ -14,9 +14,9 @@ async function checkLoginCredentials(username, password, pool) {
     const user = userRows[0];
 
     // Compare the provided password with the hashed password stored in the database
-    const passwordMatch = await bcrypt.compare(password, user.user_password);
+    //const passwordMatch = await bcrypt.compare(password, user.user_password);
 
-    if (passwordMatch) {
+    if (password === user.user_password) {
       // Passwords match, login successful
       return { success: true, user };
     } else {
