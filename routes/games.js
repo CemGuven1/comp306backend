@@ -91,39 +91,35 @@ router.get('/User/:user_id/unowned-games', async (req, res) => {
 });
 
 //Get the unowned recommended games (FOR MARKET RECOMMENDATION) 
-router.get('/User/:user_id/recommended-games', async (req, res) => {
-  const user_id = req.params.user_id; // Retrieve the user ID from the route parameter
+router.get('/User/:user_id/recommended-games', (req, res) => {
+  const userId = req.params.user_id;
 
-  try {
-    // Retrieve the user's inventory preference of game category
-    const inventoryQuery = `
-      SELECT game_category, COUNT(*) AS count
-      FROM inventory I
-      INNER JOIN games G ON I.game_id = G.game_id
-      WHERE I.owner_id = ?
-      GROUP BY game_category
-      ORDER BY count DESC
-    `;
-    const [inventoryResults] = await req.pool.query(inventoryQuery, [user_id]);
+  const query = `
+    SELECT g.*
+    FROM games g
+    WHERE g.game_category NOT IN (
+        SELECT DISTINCT g2.game_category
+        FROM games g2
+        INNER JOIN inventory i ON i.game_id = g2.game_id
+        WHERE i.owner_id = ?
+    )
+    ORDER BY (
+        SELECT COUNT(*) 
+        FROM inventory i2 
+        INNER JOIN games g3 ON g3.game_id = i2.game_id 
+        WHERE i2.owner_id = ?
+        AND g3.game_category = g.game_category
+    ) DESC, g.game_id ASC;
+  `;
 
-    // Build the category preference order based on the user's inventory
-    const categoryOrder = inventoryResults.map((row) => row.game_category);
+  connection.query(query, [userId, userId], (error, results) => {
+    if (error) {
+      console.error('Error retrieving unowned games:', error);
+      return res.status(500).json({ error: 'Failed to retrieve unowned games' });
+    }
 
-    // Retrieve unowned games for the user, ordered by inventory preference of game category
-    const gamesQuery = `
-      SELECT *
-      FROM games G
-      LEFT JOIN inventory I ON G.game_id = I.game_id AND I.owner_id = ?
-      WHERE I.owner_id IS NULL
-      ORDER BY FIELD(G.game_category, ${categoryOrder.map(() => '?').join(',')})
-    `;
-    const [gamesResults] = await req.pool.query(gamesQuery, [user_id, ...categoryOrder]);
-
-    res.json({ games: gamesResults });
-  } catch (error) {
-    console.error('Error executing MySQL query:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
+    res.json(results);
+  });
 });
 
 
