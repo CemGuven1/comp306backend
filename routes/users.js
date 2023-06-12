@@ -60,7 +60,7 @@ router.get('/:user_id', async (req, res) => {
   
       // Insert the new user into the database
       const insertQuery = 'INSERT INTO users (user_id, username, user_password, user_email, user_name, user_surname) VALUES (?, ?, ?, ?, ?, ?)';
-      const [insertResult] = await req.pool.query(insertQuery, [newUserId, username, hashedPassword, email, name, surname ]);
+      const [insertResult] = await req.pool.query(insertQuery, [newUserId, username, password, email, name, surname ]);
   
       // Retrieve the newly created user
       const getUserQuery = 'SELECT * FROM users WHERE user_id = ?';
