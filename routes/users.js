@@ -41,10 +41,11 @@ router.get('/:user_id', async (req, res) => {
   
     try {
       // Check if the username and email are valid
-      const CheckQuery = 'SELECT * FROM users WHERE username = ? OR email = ?';
+      const CheckQuery = 'SELECT * FROM users WHERE username = ? OR user_email = ?';
       const [CheckRows] = await req.pool.query(CheckQuery, [username, email]);
-  
+      
       if (CheckRows.length > 0) {
+
         res.status(400).json({ error: 'Username or email is not valid' });
         return;
       }
@@ -56,17 +57,17 @@ router.get('/:user_id', async (req, res) => {
       const newUserId = maxUserId + 1;
 
       // Hash the password
-      const hashedPassword = await bcrypt.hash(password, 10);
+      //const hashedPassword = await bcrypt.hash(password, 10);
   
       // Insert the new user into the database
       const insertQuery = 'INSERT INTO users (user_id, username, user_password, user_email, user_name, user_surname) VALUES (?, ?, ?, ?, ?, ?)';
       const [insertResult] = await req.pool.query(insertQuery, [newUserId, username, password, email, name, surname ]);
   
       // Retrieve the newly created user
-      const getUserQuery = 'SELECT * FROM users WHERE user_id = ?';
-      const [userRows] = await req.pool.query(getUserQuery, [insertResult.insertId]);
-  
-      res.status(201).json(userRows[0]);
+      const getUserQuery = 'SELECT * FROM users WHERE username = ?';
+      const [userRows] = await req.pool.query(getUserQuery, [username]);
+      
+      res.status(201).json({user: userRows[0]});
     } catch (error) {
       console.error('Error executing MySQL query:', error);
       res.status(500).json({ error: 'Internal Server Error' });
