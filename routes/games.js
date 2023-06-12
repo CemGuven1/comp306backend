@@ -22,12 +22,12 @@ router.get('/User/:user_id/owned-games', async (req, res) => {
     const query = `
       SELECT *
       FROM games G
-      INNER JOIN Inventory I ON G.game_id = I.game_id
+      INNER JOIN inventory I ON G.game_id = I.game_id
       WHERE I.owner_id = ?
     `;
     const [results] = await req.pool.query(query, [user_id]);
 
-    res.json({ games: results });
+    res.json(results);
   } catch (error) {
     console.error('Error executing MySQL query:', error);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -43,7 +43,7 @@ router.get('/User/:user_id/unowned-games', async (req, res) => {
     const query = `
       SELECT *
       FROM games G
-      LEFT JOIN Inventory I ON G.game_id = I.game_id AND I.owner_id = ?
+      LEFT JOIN inventory I ON G.game_id = I.game_id AND I.owner_id = ?
       WHERE I.owner_id IS NULL
     `;
     const [results] = await req.pool.query(query, [user_id]);
@@ -63,7 +63,7 @@ router.get('/User/:user_id/recommended-games', async (req, res) => {
     // Retrieve the user's inventory preference of game category
     const inventoryQuery = `
       SELECT game_category, COUNT(*) AS count
-      FROM Inventory I
+      FROM inventory I
       INNER JOIN games G ON I.game_id = G.game_id
       WHERE I.owner_id = ?
       GROUP BY game_category
@@ -78,7 +78,7 @@ router.get('/User/:user_id/recommended-games', async (req, res) => {
     const gamesQuery = `
       SELECT *
       FROM games G
-      LEFT JOIN Inventory I ON G.game_id = I.game_id AND I.owner_id = ?
+      LEFT JOIN inventory I ON G.game_id = I.game_id AND I.owner_id = ?
       WHERE I.owner_id IS NULL
       ORDER BY FIELD(G.game_category, ${categoryOrder.map(() => '?').join(',')})
     `;

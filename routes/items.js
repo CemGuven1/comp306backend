@@ -9,8 +9,8 @@ router.get('/user/:user_id/items', async (req, res) => {
     // Retrieve items and their associated games for the user
     const query = `
       SELECT i.item_id, i.item_name, i.item_price, g.game_id, g.game_name, g.game_price
-      FROM Items AS i
-      JOIN Games AS g ON i.game_id = g.game_id
+      FROM items AS i
+      JOIN games AS g ON i.game_id = g.game_id
       WHERE i.owner_id = ?
     `;
     const [results] = await req.pool.query(query, [user_id]);

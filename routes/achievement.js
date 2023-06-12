@@ -4,7 +4,7 @@ const router = Router();
 //Get all achievements
 router.get('/', async (req, res) => {
   try {
-    const getAchievementsQuery = 'SELECT * FROM Achievements';
+    const getAchievementsQuery = 'SELECT * FROM achievements';
     const [achievements] = await req.pool.query(getAchievementsQuery);
 
     res.json(achievements);
@@ -40,7 +40,7 @@ router.get('/Game/:game_id', async (req, res) => {
 
   try {
     const getUserAchievementsQuery = `
-      SELECT achievements.achievement_id, Achievements.achievement_name
+      SELECT achievements.achievement_id, achievements.achievement_name
       FROM achievements
       INNER JOIN xp ON achievements.achievement_id = xp.achievement_id
       WHERE xp.player_id = ?
