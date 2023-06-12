@@ -93,10 +93,10 @@ router.get('/User/:user_id/unowned-games', async (req, res) => {
 //Get the unowned recommended games (FOR MARKET RECOMMENDATION) 
 router.get('/User/:user_id/recommended-games', async (req, res) => {
   const userId = req.params.user_id;
-  
+
   try {
     const query = `
-    SELECT *
+    SELECT g.game_id, g.game_name, g.game_price, g.game_description, g.game_category, g.release_date, g.game_rating, g.image
     FROM games g
     LEFT JOIN (
       SELECT i2.game_id, COUNT(*) AS count
