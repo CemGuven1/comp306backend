@@ -94,7 +94,7 @@ router.get('/:user_id', async (req, res) => {
   });
 
 // Add balance to user
-router.post('/:user_id/balance/:balance', async (req, res) => {
+router.post('/:user_id/balance/:balance/add', async (req, res) => {
   const { user_id, balance } = req.params; // Retrieve the user ID and balance from the route parameters
 
   try {
@@ -118,7 +118,7 @@ router.post('/:user_id/balance/:balance', async (req, res) => {
 });
 
 // subtract balance from user
-router.post('/:user_id/balance/:balance', async (req, res) => {
+router.post('/:user_id/balance/:balance/sub', async (req, res) => {
   const { user_id, balance } = req.params; // Retrieve the user ID and balance from the route parameters
 
   try {
