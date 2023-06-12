@@ -54,4 +54,35 @@ router.get('/Game/:game_id', async (req, res) => {
   }
 });
 
+//Get most achieved achievements of a game spesific to given game_id 
+router.get('/Game/:game_id/most-earned', async (req, res) => {
+  const game_id = req.params.game_id; // Retrieve the game ID from the route parameters
+
+  try {
+    const getMostEarnedAchievementQuery = `
+      SELECT *
+      FROM achievements a
+      LEFT JOIN (
+        SELECT achievement_id, COUNT(*) AS earned_count
+        FROM xp
+        WHERE game_id = ?
+        GROUP BY achievement_id
+      ) xp ON a.achievement_id = xp.achievement_id
+      WHERE a.game_id = ?
+      ORDER BY earned_count DESC
+      LIMIT 1
+    `;
+    const [achievements] = await req.pool.query(getMostEarnedAchievementQuery, [game_id, game_id]);
+
+    if (achievements.length === 0) {
+      return res.status(404).json({ error: 'No achievements found for the given game ID' });
+    }
+
+    res.json(achievements[0]);
+  } catch (error) {
+    console.error('Error executing MySQL query:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 export default router;
