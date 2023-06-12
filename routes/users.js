@@ -79,7 +79,7 @@ router.get('/:user_id', async (req, res) => {
 
   
     try {
-      const loginResult = await checkLoginCredentials('ali_56', 'ali123', req.pool);
+      const loginResult = await checkLoginCredentials(username, password, req.pool);
       if (loginResult.success) {
         // Login successful
         res.json({ message: 'Login successful', user: loginResult.user });
