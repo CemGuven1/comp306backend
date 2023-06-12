@@ -21,7 +21,7 @@ router.get('/:user_id', async (req, res) => {
     const userId = req.params.user_id;
   
     try {
-      const query = 'SELECT * FROM Users WHERE user_id = ?';
+      const query = 'SELECT * FROM users WHERE user_id = ?';
       const [rows] = await req.pool.query(query, [userId]);
   
       if (rows.length === 0) {
@@ -41,7 +41,7 @@ router.get('/:user_id', async (req, res) => {
   
     try {
       // Check if the username and email are valid
-      const CheckQuery = 'SELECT * FROM Users WHERE username = ? OR email = ?';
+      const CheckQuery = 'SELECT * FROM users WHERE username = ? OR email = ?';
       const [CheckRows] = await req.pool.query(CheckQuery, [username, email]);
   
       if (CheckRows.length > 0) {
@@ -50,7 +50,7 @@ router.get('/:user_id', async (req, res) => {
       }
       
       // Get the highest user_id from the Users table
-      const getMaxUserIdQuery = 'SELECT MAX(user_id) AS max_user_id FROM Users';
+      const getMaxUserIdQuery = 'SELECT MAX(user_id) AS max_user_id FROM users';
       const [maxUserIdRows] = await req.pool.query(getMaxUserIdQuery);
       const maxUserId = maxUserIdRows[0].max_user_id || 0;
       const newUserId = maxUserId + 1;
@@ -59,11 +59,11 @@ router.get('/:user_id', async (req, res) => {
       const hashedPassword = await bcrypt.hash(password, 10);
   
       // Insert the new user into the database
-      const insertQuery = 'INSERT INTO Users (user_id, username, user_password, user_email, user_name, user_surname) VALUES (?, ?, ?, ?, ?, ?)';
+      const insertQuery = 'INSERT INTO users (user_id, username, user_password, user_email, user_name, user_surname) VALUES (?, ?, ?, ?, ?, ?)';
       const [insertResult] = await req.pool.query(insertQuery, [newUserId, username, hashedPassword, email, name, surname ]);
   
       // Retrieve the newly created user
-      const getUserQuery = 'SELECT * FROM Users WHERE user_id = ?';
+      const getUserQuery = 'SELECT * FROM users WHERE user_id = ?';
       const [userRows] = await req.pool.query(getUserQuery, [insertResult.insertId]);
   
       res.status(201).json(userRows[0]);

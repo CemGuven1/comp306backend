@@ -4,7 +4,7 @@ const router = Router();
 //Get all games
 router.get('/', async (req, res) => {
   try {
-    const query = 'SELECT * FROM Games';
+    const query = 'SELECT * FROM games';
     const [rows] = await req.pool.query(query);
     res.json(rows);
   } catch (error) {
@@ -21,7 +21,7 @@ router.get('/User/:user_id/owned-games', async (req, res) => {
     // Retrieve games owned by the user
     const query = `
       SELECT *
-      FROM Games G
+      FROM games G
       INNER JOIN Inventory I ON G.game_id = I.game_id
       WHERE I.owner_id = ?
     `;
@@ -42,7 +42,7 @@ router.get('/User/:user_id/unowned-games', async (req, res) => {
     // Retrieve unowned games for the user
     const query = `
       SELECT *
-      FROM Games G
+      FROM games G
       LEFT JOIN Inventory I ON G.game_id = I.game_id AND I.owner_id = ?
       WHERE I.owner_id IS NULL
     `;
@@ -64,7 +64,7 @@ router.get('/User/:user_id/recommended-games', async (req, res) => {
     const inventoryQuery = `
       SELECT game_category, COUNT(*) AS count
       FROM Inventory I
-      INNER JOIN Games G ON I.game_id = G.game_id
+      INNER JOIN games G ON I.game_id = G.game_id
       WHERE I.owner_id = ?
       GROUP BY game_category
       ORDER BY count DESC
@@ -77,7 +77,7 @@ router.get('/User/:user_id/recommended-games', async (req, res) => {
     // Retrieve unowned games for the user, ordered by inventory preference of game category
     const gamesQuery = `
       SELECT *
-      FROM Games G
+      FROM games G
       LEFT JOIN Inventory I ON G.game_id = I.game_id AND I.owner_id = ?
       WHERE I.owner_id IS NULL
       ORDER BY FIELD(G.game_category, ${categoryOrder.map(() => '?').join(',')})

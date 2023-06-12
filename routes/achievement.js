@@ -9,7 +9,7 @@ router.get('/Game/:game_id', async (req, res) => {
     // Retrieve achievements specific to the game
     const query = `
       SELECT achievement_id, achievement_name
-      FROM Achievements
+      FROM achievements
       WHERE game_id = ?
     `;
     const [results] = await req.pool.query(query, [game_id]);
@@ -27,9 +27,9 @@ router.get('/Game/:game_id', async (req, res) => {
 
   try {
     const getUserAchievementsQuery = `
-      SELECT Achievements.achievement_id, Achievements.achievement_name
-      FROM Achievements
-      INNER JOIN XP ON Achievements.achievement_id = XP.achievement_id
+      SELECT achievements.achievement_id, Achievements.achievement_name
+      FROM achievements
+      INNER JOIN XP ON achievements.achievement_id = XP.achievement_id
       WHERE XP.player_id = ?
     `;
     const [achievementRows] = await req.pool.query(getUserAchievementsQuery, [user_id]);
