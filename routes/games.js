@@ -62,7 +62,7 @@ router.get('/User/:user_id/owned-games', async (req, res) => {
     `;
     const [results] = await req.pool.query(query, [user_id]);
 
-    res.json({ games: results });
+    res.json(results);
   } catch (error) {
     console.error('Error executing MySQL query:', error);
     res.status(500).json({ error: 'Internal Server Error' });
