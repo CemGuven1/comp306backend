@@ -60,7 +60,7 @@ router.get('/:user_id', async (req, res) => {
       //const hashedPassword = await bcrypt.hash(password, 10);
   
       // Insert the new user into the database
-      const insertQuery = 'INSERT INTO users (user_id, username, user_password, user_email, user_name, user_surname) VALUES (?, ?, ?, ?, ?, ?)';
+      const insertQuery = 'INSERT INTO users (user_id, username, user_password, user_email, user_name, user_surname, user_balance) VALUES (?, ?, ?, ?, ?, ?, 0)';
       const [insertResult] = await req.pool.query(insertQuery, [newUserId, username, password, email, name, surname ]);
   
       // Retrieve the newly created user
