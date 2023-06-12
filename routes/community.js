@@ -13,17 +13,20 @@ router.get('/', async (req, res) => {
   }
 });
 
-//Get User spesific community
+//Get User spesific community (either member of or admin of)
 router.get('/User/:user_id', async (req, res) => {
-  const { user_id } = req.params;
+  const user_id = req.params.user_id; // Retrieve the user ID from the route parameters
 
   try {
-    const [rows] = await req.pool.query(
-      'SELECT * FROM communities JOIN member_of ON communities.community_id = member_of.community_id WHERE member_of.member_id = ?',
-      [user_id]
-    );
+    const getCommunitiesQuery = `
+      SELECT *
+      FROM communities c
+      LEFT JOIN member_of m ON c.community_id = m.community_id
+      WHERE m.member_id = ? OR c.admin_id = ?
+    `;
+    const [communities] = await req.pool.query(getCommunitiesQuery, [user_id, user_id]);
 
-    res.json(rows);
+    res.json(communities);
   } catch (error) {
     console.error('Error executing MySQL query:', error);
     res.status(500).json({ error: 'Internal Server Error' });
