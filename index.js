@@ -9,6 +9,7 @@ import itemsRoutes from './routes/items.js';
 import communityRoutes from './routes/community.js';
 import postsRoutes from './routes/posts.js';
 import achievementRoutes from './routes/achievement.js';
+import inventoryRoutes from './routes/inventory.js';
 
 const app = express();
 const port = 3000;
@@ -41,6 +42,8 @@ app.use('/items', itemsRoutes);
 app.use('/posts', postsRoutes);
 app.use('/community', communityRoutes);
 app.use('/achievement', achievementRoutes);
+app.use('/inventory', inventoryRoutes);
+
 
 app.listen(port, () => {
     console.log(`Listening at http://localhost:${port}`);

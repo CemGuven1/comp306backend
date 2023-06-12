@@ -4,7 +4,7 @@ const router = Router();
 //Get all communities
 router.get('/', async (req, res) => {
   try {
-    const query = 'SELECT * FROM Communities';
+    const query = 'SELECT * FROM communities';
     const [rows] = await req.pool.query(query);
     res.json(rows);
   } catch (error) {
@@ -19,7 +19,7 @@ router.get('/User/:user_id', async (req, res) => {
 
   try {
     const [rows] = await req.pool.query(
-      'SELECT Communities.community_id, Communities.community_name FROM Communities JOIN Member_Of ON Communities.community_id = Member_Of.community_id WHERE Member_Of.member_id = ?',
+      'SELECT * FROM communities JOIN member_of ON communities.community_id = member_of.community_id WHERE member_of.member_id = ?',
       [user_id]
     );
 
@@ -38,7 +38,7 @@ router.post('/:community_id/User/:user_id/join', async (req, res) => {
   try {
     // Check if the user is already a member of the community
     const [result] = await req.pool.query(
-      'SELECT COUNT(*) AS count FROM Member_Of WHERE member_id = ? AND community_id = ?',
+      'SELECT COUNT(*) AS count FROM member_of WHERE member_id = ? AND community_id = ?',
       [user_id, community_id]
     );
     const isMember = result[0].count > 0;
@@ -49,7 +49,7 @@ router.post('/:community_id/User/:user_id/join', async (req, res) => {
 
     // Join the community
     await req.pool.query(
-      'INSERT INTO Member_Of (member_id, community_id) VALUES (?, ?)',
+      'INSERT INTO member_of (member_id, community_id) VALUES (?, ?)',
       [user_id, community_id]
     );
 
@@ -68,7 +68,7 @@ router.post('/:community_id/User/:user_id/leave', async (req, res) => {
   try {
     // Check if the user is a member of the community
     const [result] = await req.pool.query(
-      'SELECT COUNT(*) AS count FROM Member_Of WHERE member_id = ? AND community_id = ?',
+      'SELECT COUNT(*) AS count FROM member_of WHERE member_id = ? AND community_id = ?',
       [user_id, community_id]
     );
     const isMember = result[0].count > 0;
@@ -79,7 +79,7 @@ router.post('/:community_id/User/:user_id/leave', async (req, res) => {
 
     // Leave the community
     await req.pool.query(
-      'DELETE FROM Member_Of WHERE member_id = ? AND community_id = ?',
+      'DELETE FROM member_of WHERE member_id = ? AND community_id = ?',
       [user_id, community_id]
     );
 
@@ -99,7 +99,7 @@ router.put('/:community_id/Admin/:user_id/update', async (req, res) => {
   try {
     // Check if the user is the admin of the community
     const [result] = await req.pool.query(
-      'SELECT COUNT(*) AS count FROM Communities WHERE community_id = ? AND community_admin = ?',
+      'SELECT COUNT(*) AS count FROM communities WHERE community_id = ? AND community_admin = ?',
       [community_id, admin_id]
     );
     const isAdmin = result[0].count > 0;
@@ -110,7 +110,7 @@ router.put('/:community_id/Admin/:user_id/update', async (req, res) => {
 
     // Update the community information
     await req.pool.query(
-      'UPDATE Communities SET community_name = ?, community_description = ? WHERE community_id = ?',
+      'UPDATE communities SET community_name = ?, community_description = ? WHERE community_id = ?',
       [community_name, community_description, community_id]
     );
 
