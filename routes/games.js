@@ -91,10 +91,11 @@ router.get('/User/:user_id/unowned-games', async (req, res) => {
 });
 
 //Get the unowned recommended games (FOR MARKET RECOMMENDATION) 
-router.get('/User/:user_id/recommended-games', (req, res) => {
+router.get('/User/:user_id/recommended-games', async (req, res) => {
   const userId = req.params.user_id;
-
-  const query = `
+  
+  try {
+    const query = `
     SELECT *
     FROM games g
     LEFT JOIN (
@@ -111,14 +112,13 @@ router.get('/User/:user_id/recommended-games', (req, res) => {
   ORDER BY inv.count DESC, g.game_category ASC, g.game_id ASC;
   `;
 
-  connection.query(query, [userId, userId], (error, results) => {
-    if (error) {
-      console.error('Error retrieving unowned games:', error);
-      return res.status(500).json({ error: 'Failed to retrieve unowned games' });
-    }
+    const [rows] = await req.pool.query(query, [userId, userId]);
+    res.json(rows);
+  } catch (error) {
+    console.error('Error retrieving unowned games:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 
-    res.json(results);
-  });
 });
 
 
