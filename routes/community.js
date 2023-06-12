@@ -19,10 +19,10 @@ router.get('/User/:user_id', async (req, res) => {
 
   try {
     const getCommunitiesQuery = `
-      SELECT *
+      SELECT DISTINCT c.community_id, c.community_name, c.community_admin, c.community_odes
       FROM communities c
       LEFT JOIN member_of m ON c.community_id = m.community_id
-      WHERE m.member_id = ? OR c.admin_id = ?
+      WHERE m.member_id = ? OR c.community_admin = ?
     `;
     const [communities] = await req.pool.query(getCommunitiesQuery, [user_id, user_id]);
 
