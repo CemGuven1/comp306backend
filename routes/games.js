@@ -95,21 +95,20 @@ router.get('/User/:user_id/recommended-games', (req, res) => {
   const userId = req.params.user_id;
 
   const query = `
-    SELECT g.*
+    SELECT *
     FROM games g
-    WHERE g.game_category NOT IN (
-        SELECT DISTINCT g2.game_category
-        FROM games g2
-        INNER JOIN inventory i ON i.game_id = g2.game_id
-        WHERE i.owner_id = ?
-    )
-    ORDER BY (
-        SELECT COUNT(*) 
-        FROM inventory i2 
-        INNER JOIN games g3 ON g3.game_id = i2.game_id 
-        WHERE i2.owner_id = ?
-        AND g3.game_category = g.game_category
-    ) DESC, g.game_id ASC;
+    LEFT JOIN (
+      SELECT i2.game_id, COUNT(*) AS count
+      FROM inventory i2
+      WHERE i2.owner_id = ?
+      GROUP BY i2.game_id
+  ) inv ON g.game_id = inv.game_id
+    WHERE g.game_id NOT IN (
+      SELECT i3.game_id
+      FROM inventory i3
+      WHERE i3.owner_id = ?
+  )
+  ORDER BY inv.count DESC, g.game_category ASC, g.game_id ASC;
   `;
 
   connection.query(query, [userId, userId], (error, results) => {
