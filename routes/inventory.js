@@ -40,3 +40,4 @@ router.post('/User/:user_id/Game/:game_id/add', async (req, res) => {
     }
   });
 
+  export default router;

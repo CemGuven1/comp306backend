@@ -27,7 +27,7 @@ router.get('/Game/:game_id', async (req, res) => {
     `;
     const [results] = await req.pool.query(query, [game_id]);
 
-    res.json({ achievements: results });
+    res.json(results);
   } catch (error) {
     console.error('Error executing MySQL query:', error);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -42,8 +42,8 @@ router.get('/Game/:game_id', async (req, res) => {
     const getUserAchievementsQuery = `
       SELECT achievements.achievement_id, achievements.achievement_name
       FROM achievements
-      INNER JOIN xp ON achievements.achievement_id = XP.achievement_id
-      WHERE XP.player_id = ?
+      INNER JOIN xp ON achievements.achievement_id = xp.achievement_id
+      WHERE xp.player_id = ?
     `;
     const [achievementRows] = await req.pool.query(getUserAchievementsQuery, [user_id]);
 
