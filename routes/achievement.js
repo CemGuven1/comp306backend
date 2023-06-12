@@ -54,6 +54,7 @@ router.get('/Game/:game_id', async (req, res) => {
   }
 });
 
+//Get most achieved achievements of a game spesific to given game_id 
 router.get('/Game/:game_id/most-earned', async (req, res) => {
   const game_id = req.params.game_id; // Retrieve the game ID from the route parameters
 

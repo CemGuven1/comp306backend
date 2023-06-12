@@ -125,4 +125,34 @@ router.put('/:community_id/Admin/:user_id/update', async (req, res) => {
 });
 
 
+// get most popular community i.e the community which has most members in it.
+router.get('/:community_id/most-popular', async (req, res) => {
+  const community_id = req.params.community_id; // Retrieve the community ID from the route parameters
+
+  try {
+    const getMostPopularCommunityQuery = `
+      SELECT *
+      FROM community c
+      INNER JOIN (
+        SELECT community_id, COUNT(*) AS member_count
+        FROM member_of
+        GROUP BY community_id
+      ) m ON c.community_id = m.community_id
+      WHERE c.community_id = ?
+      ORDER BY member_count DESC
+      LIMIT 1
+    `;
+    const [community] = await req.pool.query(getMostPopularCommunityQuery, [community_id]);
+
+    if (community.length === 0) {
+      return res.status(404).json({ error: 'Community not found' });
+    }
+
+    res.json(community[0]);
+  } catch (error) {
+    console.error('Error executing MySQL query:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 export default router;
