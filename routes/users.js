@@ -132,7 +132,7 @@ router.post('/:user_id/balance/:balance/sub', async (req, res) => {
 
     // Check if the user has sufficient balance
     const currentUserBalance = user[0].user_balance;
-    if (currentUserBalance < balance) {
+    if (currentUserBalance < +balance) {
       return res.status(400).json({ error: 'Insufficient balance' });
     }
 
