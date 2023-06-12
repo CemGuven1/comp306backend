@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 async function checkLoginCredentials(username, password, pool) {
   try {
     // Retrieve the user from the database based on the provided username
-    const getUserQuery = 'SELECT * FROM Users WHERE username = ?';
+    const getUserQuery = 'SELECT * FROM users WHERE username = ?';
     const [userRows] = await pool.query(getUserQuery, [username]);
 
     // Check if the user exists
